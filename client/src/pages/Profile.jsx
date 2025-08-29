@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import supabase from '../supabase'
+import { supabase } from "../supabase.js";
 import {
   updateUserFailure,
   updateUserStart,
@@ -19,9 +19,10 @@ export default function Profile() {
   const fileRef = useRef(null);
   const [file, setFile] = useState(null);
   const { currentUser, loading, error } = useSelector((state) => state.user);
-  console.log(currentUser.user.id);
+  const [imgPreview, setImgPreview] = useState(currentUser.user.img_profile);
   console.log(currentUser);
-  console.log(currentUser.img_profile);
+  console.log(currentUser.user.id);
+  console.log(currentUser.user.img_profile);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -98,20 +99,34 @@ export default function Profile() {
     }
   };
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImgPreview(reader.result);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
   };
-  const handleFileUpload = async () => {
+  const handleFileUpload = async (e) => {
+    e.preventDefault();
     if (!file) return;
-    const filename = `${Date.now()}-${file.name} `;
-    console.log(file.name);
-
+    const filename = `${Date.now()}-${file.name}`;
     const { data, error } = await supabase.storage
       .from("img")
       .upload(filename, file);
-    console.log(data);
     if (error) {
       console.log(error);
+      return;
     }
+    // Get the public URL
+    const { data: urlData } = supabase.storage.from("img").getPublicUrl(filename);
+    // Add the image URL to formData
+    setFormData((prev) => ({
+      ...prev,
+      img_profile: urlData.publicUrl,
+    }));
   };
 
   return (
@@ -126,15 +141,15 @@ export default function Profile() {
           ref={fileRef}
           type="file"
           hidden
-          onChange={handleFileChange}
+          onChange={e => { handleFileChange(e); handleChange(e); }}
           accept="image/*"
         />
         <img
-          onChange={handleFileUpload}
+          id="img_profile"
           onClick={() => fileRef.current.click()}
-          src={currentUser.user.img_profile}
+          src={imgPreview || '/default-profile.png'}
           alt={currentUser.user.name}
-          className="rounded-full"
+          className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
 
         <input
@@ -160,7 +175,10 @@ export default function Profile() {
           placeholder="password"
           className="p-3  bg-gray-200 w-[50%] mx-auto  my-3 rounded-2xl"
         />
-        <button className=" bg-gray-900 rounded-2xl hover:bg-gray-700  w-[50%] text-white p-3 mx-auto">
+        <button
+          onClick={handleFileUpload}
+          className=" bg-gray-900 rounded-2xl hover:bg-gray-700  w-[50%] text-white p-3 mx-auto"
+        >
           {loading ? "Loading" : "update"}
         </button>
         <button

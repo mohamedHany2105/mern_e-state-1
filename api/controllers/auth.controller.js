@@ -26,7 +26,8 @@ export const signIn = async (req, res, next) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        img_profile: user.img_profile
       }
     });
   } catch (error) {
