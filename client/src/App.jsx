@@ -24,14 +24,14 @@ function App() {
         <Route element={<SignUp />} path="/signup" />
         <Route element={<Search />} path="/search" />
         <Route element={<Service />} path="/service/:serviceId" />
-        <Route element={<PrivateRoute />}>
+        {/* <Route element={<PrivateRoute />}> */}
           <Route path="/profile" element={<Profile />} />
-          <Route path="/create-service" element={<CreateService />} />
+          {/* <Route path="/create-service" element={<CreateService />} />
           <Route
             path="/update-service/:serviceId"
             element={<UpdateService />}
           />
-        </Route>
+        </Route> */}
       </Routes>
       <Footer />
     </BrowserRouter>

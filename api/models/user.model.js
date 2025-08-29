@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema(
     },
     img_profile:{
       type:String,
-      
+      default:"https://uifqnenvbpazlwmaalgj.supabase.co/storage/v1/object/public/img/1755954224471-Screenshot%20(3).png"
     }
   },
   {

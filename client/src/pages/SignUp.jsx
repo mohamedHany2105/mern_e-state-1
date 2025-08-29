@@ -45,6 +45,7 @@ export default function SignUp() {
         onSubmit={handleSubmit}
         className="flex flex-col gap-10 my-10 justify-between items-center w-[70%] shadow-lg p-3 mx-auto"
       >
+        
         <input
           onChange={handleChange}
           type="text"
