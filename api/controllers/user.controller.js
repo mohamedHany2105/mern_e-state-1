@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import {errorHandler} from "../utils/error.js";
 import Service from "../models/service.model.js";
+import bcryptjs from "bcryptjs";
 
 export const getAllUsers = async (req, res, next) => {
   try {
@@ -34,7 +35,8 @@ export const updateUser = async (req, res, next) => {
   const { id } = req.params;
   const { name, email, password } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(id, { name, email, password });
+    const hashedPassword = bcryptjs.hashSync(password,10)
+    const user = await User.findByIdAndUpdate(id, { name, email, password:hashedPassword });
     if (!user) {
       return next(errorHandler(401, "user not found"));
     }

@@ -2,9 +2,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch, FaBars } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+const {currentUser}=useSelector((state)=>state.user)
+
   return (
     <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-10 p-3 bg-gray-800 w-full">
       <div className="flex items-center justify-between w-full sm:w-auto">
@@ -31,9 +34,21 @@ export default function Header() {
         <li className="hover:underline">
           <Link to='/about'>About</Link>
         </li>
-        <li className="hover:underline">
-          <Link to="/signin">Sign In</Link>
-        </li>
+
+{
+  currentUser?
+  <li>
+    <Link to='/profile'>
+<img src={currentUser.user.img_profile} className="rounded-full " alt={currentUser.user.name} />
+    </Link>
+  </li>
+ :
+<li>
+<Link to='/signin'>Sign in</Link>
+</li>
+
+}
+          
       </ul>
     </header>
   );
